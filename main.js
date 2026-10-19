@@ -26,7 +26,7 @@ function changeHP(count) {
 
     if (this.damageHP <= 0) {
         this.damageHP = 0;
-        alert('Бедный ' + this.name + ' проиграл бой!');
+        alert('Бідний ' + this.name + ' проиграл бой!');
         $btnKick.disabled = true;
         $btnSpecial.disabled = true;
     }
