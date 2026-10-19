@@ -1,5 +1,38 @@
 const $btnKick = document.getElementById('btn-kick');
 const $btnSpecial = document.getElementById('btn-special');
+function renderHPLife() {
+    this.elHP.innerText = this.damageHP + ' / ' + this.defaultHP;
+}
+
+function renderProgressbarHP() {
+    const percent = (this.damageHP / this.defaultHP) * 100;
+    this.elProgressbar.style.width = percent + '%';
+
+    this.elProgressbar.classList.remove('low', 'critical');
+    if (percent < 20) {
+        this.elProgressbar.classList.add('critical');
+    } else if (percent < 60) {
+        this.elProgressbar.classList.add('low');
+    }
+}
+
+function renderHP() {
+    this.renderHPLife();
+    this.renderProgressbarHP();
+}
+
+function changeHP(count) {
+    this.damageHP -= count;
+
+    if (this.damageHP <= 0) {
+        this.damageHP = 0;
+        alert('Бедный ' + this.name + ' проиграл бой!');
+        $btnKick.disabled = true;
+        $btnSpecial.disabled = true;
+    }
+
+    this.renderHP();
+}
 
 const character = {
     name: 'Pikachu',
@@ -7,6 +40,11 @@ const character = {
     damageHP: 100,
     elHP: document.getElementById('health-character'),
     elProgressbar: document.getElementById('progressbar-character'),
+    
+    changeHP: changeHP,
+    renderHP: renderHP,
+    renderHPLife: renderHPLife,
+    renderProgressbarHP: renderProgressbarHP
 };
 
 const enemy = {
@@ -15,49 +53,20 @@ const enemy = {
     damageHP: 100,
     elHP: document.getElementById('health-enemy'),
     elProgressbar: document.getElementById('progressbar-enemy'),
+    
+    changeHP: changeHP,
+    renderHP: renderHP,
+    renderHPLife: renderHPLife,
+    renderProgressbarHP: renderProgressbarHP
 };
 
 function random(num) {
     return Math.ceil(Math.random() * num);
 }
 
-function renderHPLife(person) {
-    person.elHP.innerText = person.damageHP + ' / ' + person.defaultHP;
-}
-
-function renderProgressbarHP(person) {
-    const percent = (person.damageHP / person.defaultHP) * 100;
-    person.elProgressbar.style.width = percent + '%';
-
-    person.elProgressbar.classList.remove('low', 'critical');
-    if (percent < 20) {
-        person.elProgressbar.classList.add('critical');
-    } else if (percent < 60) {
-        person.elProgressbar.classList.add('low');
-    }
-}
-
-function renderHP(person) {
-    renderHPLife(person);
-    renderProgressbarHP(person);
-}
-
-function changeHP(count, person) {
-    person.damageHP -= count;
-
-    if (person.damageHP <= 0) {
-        person.damageHP = 0;
-        alert('Бедный ' + person.name + ' проиграл бой!');
-        $btnKick.disabled = true;
-        $btnSpecial.disabled = true;
-    }
-
-    renderHP(person);
-}
-
 function makeAttack(characterDamageMax, enemyDamageMax) {
-    changeHP(random(characterDamageMax), character);
-    changeHP(random(enemyDamageMax), enemy);
+    character.changeHP(random(characterDamageMax));
+    enemy.changeHP(random(enemyDamageMax));
 }
 
 $btnKick.addEventListener('click', function () {
@@ -72,8 +81,8 @@ $btnSpecial.addEventListener('click', function () {
 
 function init() {
     console.log('Start Game!');
-    renderHP(character);
-    renderHP(enemy);
+    character.renderHP();
+    enemy.renderHP();
 }
 
 init();
