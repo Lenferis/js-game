@@ -71,9 +71,7 @@ const enemy = {
     renderProgressbarHP: renderProgressbarHP
 };
 
-function random(num) {
-    return Math.ceil(Math.random() * num);
-}
+const random = (num) => Math.ceil(Math.random() * num);
 
 function generateLog(firstPerson, secondPerson, count) {
     const { name: name1, damageHP, defaultHP } = firstPerson;
@@ -95,19 +93,54 @@ function generateLog(firstPerson, secondPerson, count) {
     return logs[random(logs.length) - 1];
 }
 
+function countClicks(maxLimit = 6) {
+    let clicks = 0;
+    
+    return function(buttonName) {
+        clicks++;
+        const leftClicks = maxLimit - clicks;
+        console.log(`Кнопка "${buttonName}" натиснута. Загальна кількість кліків: ${clicks}`);
+        
+        if (leftClicks >= 0) {
+            console.log(`Залишилось натискань для кнопки "${buttonName}": ${leftClicks}`);
+        }
+        
+        if (clicks >= maxLimit) {
+            console.log(`Увага: Вичерпано лімит натискань (${maxLimit}) для кнопки "${buttonName}"!`);
+        }
+        
+        return clicks;
+    };
+}
+
+const counterKick = countClicks(6);
+const counterSpecial = countClicks(6);
+
 function makeAttack(characterDamageMax, enemyDamageMax) {
     character.changeHP(random(characterDamageMax));
     enemy.changeHP(random(enemyDamageMax));
 }
 
 $btnKick.addEventListener('click', function () {
-    console.log('Thunder Jolt!');
-    makeAttack(20, 20); 
+    const clicksCount = counterKick('Thunder Jolt');
+    
+    if (clicksCount <= 6) {
+        console.log('Thunder Jolt!');
+        makeAttack(20, 20);
+    } else {
+        console.log('Ліміт удару Thunder Jolt вичерпано!');
+    }
 });
 
 $btnSpecial.addEventListener('click', function () {
-    console.log('Special Attack!');
-    makeAttack(15, 35); 
+    const clicksCount = counterSpecial('Special Attack');
+    
+    if (clicksCount <= 6) {
+        console.log('Special Attack!');
+        makeAttack(15, 35);
+    } else {
+        console.log('Ліміт спеціального удару вичерпано!');
+    }
 });
 
 function init() {
