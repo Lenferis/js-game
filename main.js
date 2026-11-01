@@ -41,8 +41,9 @@ function changeHP(count) {
     const enemyObj = this === character ? enemy : character;
     const log = generateLog(this, enemyObj, count);
 
-    const $p = document.createElement('p');$p.innerText = log;
-    $logs.insertBefore($p,$logs.children[0]);
+    const $p = document.createElement('p');
+    $p.innerText = log;
+    $logs.insertBefore($p, $logs.children[0]);
 }
 
 const character = {
@@ -51,11 +52,10 @@ const character = {
     damageHP: 100,
     elHP: document.getElementById('health-character'),
     elProgressbar: document.getElementById('progressbar-character'),
-    
-    changeHP: changeHP,
-    renderHP: renderHP,
-    renderHPLife: renderHPLife,
-    renderProgressbarHP: renderProgressbarHP
+    changeHP,
+    renderHP,
+    renderHPLife,
+    renderProgressbarHP
 };
 
 const enemy = {
@@ -64,16 +64,15 @@ const enemy = {
     damageHP: 100,
     elHP: document.getElementById('health-enemy'),
     elProgressbar: document.getElementById('progressbar-enemy'),
-    
-    changeHP: changeHP,
-    renderHP: renderHP,
-    renderHPLife: renderHPLife,
-    renderProgressbarHP: renderProgressbarHP
+    changeHP,
+    renderHP,
+    renderHPLife,
+    renderProgressbarHP
 };
 
-const random = (num) => Math.ceil(Math.random() * num);
+const random = num => Math.ceil(Math.random() * num);
 
-function generateLog(firstPerson, secondPerson, count) {
+const generateLog = (firstPerson, secondPerson, count) => {
     const { name: name1, damageHP, defaultHP } = firstPerson;
     const { name: name2 } = secondPerson;
 
@@ -91,62 +90,55 @@ function generateLog(firstPerson, secondPerson, count) {
     ];
 
     return logs[random(logs.length) - 1];
-}
+};
 
-function countClicks(maxLimit = 6) {
+const countClicks = (maxLimit = 6, $btn) => {
     let clicks = 0;
+    const initialText = $btn.innerText;
     
-    return function(buttonName) {
+    $btn.innerText = `${initialText} (${maxLimit - clicks})`;
+
+    return () => {
         clicks++;
         const leftClicks = maxLimit - clicks;
-        console.log(`Кнопка "${buttonName}" натиснута. Загальна кількість кліків: ${clicks}`);
         
         if (leftClicks >= 0) {
-            console.log(`Залишилось натискань для кнопки "${buttonName}": ${leftClicks}`);
+            $btn.innerText = `${initialText} (${leftClicks})`;
         }
         
         if (clicks >= maxLimit) {
-            console.log(`Увага: Вичерпано лімит натискань (${maxLimit}) для кнопки "${buttonName}"!`);
+            $btn.disabled = true;
+            $btn.innerText = `${initialText} (0)`;
         }
         
-        return clicks;
+        return leftClicks;
     };
-}
+};
 
-const counterKick = countClicks(6);
-const counterSpecial = countClicks(6);
+const clickCounterKick = countClicks(6, $btnKick);
+const clickCounterSpecial = countClicks(6, $btnSpecial);
 
-function makeAttack(characterDamageMax, enemyDamageMax) {
+const makeAttack = (characterDamageMax, enemyDamageMax) => {
     character.changeHP(random(characterDamageMax));
     enemy.changeHP(random(enemyDamageMax));
-}
+};
 
-$btnKick.addEventListener('click', function () {
-    const clicksCount = counterKick('Thunder Jolt');
-    
-    if (clicksCount <= 6) {
-        console.log('Thunder Jolt!');
-        makeAttack(20, 20);
-    } else {
-        console.log('Ліміт удару Thunder Jolt вичерпано!');
-    }
+$btnKick.addEventListener('click', () => {
+    clickCounterKick();
+    console.log('Thunder Jolt!');
+    makeAttack(20, 20);
 });
 
-$btnSpecial.addEventListener('click', function () {
-    const clicksCount = counterSpecial('Special Attack');
-    
-    if (clicksCount <= 6) {
-        console.log('Special Attack!');
-        makeAttack(15, 35);
-    } else {
-        console.log('Ліміт спеціального удару вичерпано!');
-    }
+$btnSpecial.addEventListener('click', () => {
+    clickCounterSpecial();
+    console.log('Special Attack!');
+    makeAttack(15, 35);
 });
 
-function init() {
+const init = () => {
     console.log('Start Game!');
     character.renderHP();
     enemy.renderHP();
-}
+};
 
 init();
