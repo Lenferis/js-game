@@ -1,4 +1,7 @@
-export const random = (num) => Math.ceil(Math.random() * num);
+export const random = (max, min = 0) => {
+    const num = max - min;
+    return Math.ceil(Math.random() * num) + min;
+};
 
 export const generateLog = (firstPerson, secondPerson, count) => {
     const { name: name1, hp: { current: damageHP, total: defaultHP } } = firstPerson;
@@ -17,5 +20,19 @@ export const generateLog = (firstPerson, secondPerson, count) => {
         `[${name1}] намагався щось сказати, але раптом несподівано [${name2}] від нудьги розбив брову супернику. -${count}, [${damageHP}/${defaultHP}]`
     ];
 
-    return logs[random(logs.length) - 1];
+    return logs[random(logs.length - 1, 0)];
+};
+
+export const countBtn = (count = 6, el) => {
+    const innerText = el.innerText;
+    el.innerText = `${innerText} (${count})`;
+    return function () {
+        count--;
+        if (count <= 0) {
+            count = 0;
+            el.disabled = true;
+        }
+        el.innerText = `${innerText} (${count})`;
+        return count;
+    };
 };
